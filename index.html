@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sam</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/FJztgMM/shield-search-find-business-logo-20240721-144810-0000.png" type="image/x-icon" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1e1e2f;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            padding: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+            position: relative;
+            background-color: #2e2e40;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            border: 1px solid #4e4e6f;
+            border-radius: 10px;
+            background-color: #1e1e2f;
+            color: #e0e0e0;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #5e60ce;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #4b4ecb;
+        }
+
+        .results, .article-content {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background-color: #2e2e40;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+        }
+
+        .result-item:hover {
+            background-color: #3e3e50;
+            transform: scale(1.02);
+        }
+
+        .result-item img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 20px;
+            color: #5e60ce;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px 0;
+        }
+
+        .article-content {
+            display: none;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #5e60ce;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #4b4ecb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding: 10px;
+            text-align: center;
+            color: ;
+        }
+
+        .scroll-to-top {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #5e60ce;
+            color: white;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 24px;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-to-top:hover {
+            background-color: #4b4ecb;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+  .circle-image {
+            width: 150px; /* Size of the circle */
+            height: 150px; /* Size of the circle */
+            border-radius: 50%;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle; /* Aligns the image vertically with text */
+        }
+
+        .circle-image img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-box" id="searchBox">
+            <h1>
+        <div class="circle-image">
+            <img src="https://i.ibb.co/FJztgMM/shield-search-find-business-logo-20240721-144810-0000.png" alt="Circle Image">
+        </div>
+        
+    </h1>
+            <input type="text" id="searchInput" placeholder="Search here anything.........!">
+            <button id="searchButton" onclick="search()">Search</button>
+        </div>
+        <div class="results" id="results"></div>
+        <div class="article-content" id="articleContent">
+            <button class="back-button" onclick="goBack()">Back !</button>
+            <div id="articleText"></div>
+    <button class="scroll-to-top" id="scrollToTopButton" onclick="scrollToTop()">⬆</button>
+    <script>
+        async function search() {
+            const query = document.getElementById('searchInput').value;
+            const resultsDiv = document.getElementById('results');
+            const articleContentDiv = document.getElementById('articleContent');
+            const articleTextDiv = document.getElementById('articleText');
+            const searchButton = document.getElementById('searchButton');
+            const searchInput = document.getElementById('searchInput');
+            const searchBox = document.getElementById('searchBox');
+
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+            articleContentDiv.style.display = 'none';
+            articleTextDiv.innerHTML = '';
+            searchBox.style.display = 'none'; // Hide the search box
+
+            if (!query) {
+                resultsDiv.innerHTML = '<div class="result-item">Something Search Dude 🤣</div>';
+                searchBox.style.display = 'block'; // Show the search box
+                return;
+            }
+
+            const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
+            const data = await response.json();
+
+            resultsDiv.innerHTML = '';
+
+            if (data.query.search.length > 0) {
+                for (const item of data.query.search) {
+                    const pageId = item.pageid;
+                    const pageResponse = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|extracts&format=json&origin=*&pageids=${pageId}&exintro=1&explaintext=1&pithumbsize=200`);
+                    const pageData = await pageResponse.json();
+                    const page = pageData.query.pages[pageId];
+                    const thumbnail = page.thumbnail ? `<img src="${page.thumbnail.source}" alt="${item.title}">` : '';
+
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <div>${thumbnail}</div>
+                        <div>
+                            <strong>${item.title}</strong><br>
+                            ${item.snippet}...
+                        </div>
+                    `;
+                    resultItem.onclick = () => fetchArticle(pageId);
+                    resultsDiv.appendChild(resultItem);
+                }
+            } else {
+                resultsDiv.innerHTML = '<div class="result-item">Sorry 😔 Try different</div>';
+            }
+        }
+
+        async function fetchArticle(pageid) {
+            const resultsDiv = document.getElementById('results');
+            const articleContentDiv = document.getElementById('articleContent');
+            const articleTextDiv = document.getElementById('articleText');
+            const searchBox = document.getElementById('searchBox');
+            const searchButton = document.getElementById('searchButton');
+            const searchInput = document.getElementById('searchInput');
+
+            resultsDiv.style.display = 'none';
+            articleContentDiv.style.display = 'block';
+            articleTextDiv.innerHTML = '<div class="loading">Loading...</div>';
+
+            const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts|pageimages&format=json&origin=*&pageids=${pageid}&explaintext=1&pithumbsize=600`);
+            const data = await response.json();
+            const page = data.query.pages[pageid];
+
+            articleTextDiv.innerHTML = `<h2>${page.title}</h2>`;
+            if (page.thumbnail) {
+                articleTextDiv.innerHTML += `<img src="${page.thumbnail.source}" alt="${page.title}">`;
+            }
+            articleTextDiv.innerHTML += `<p>${page.extract}</p>`;
+
+            // Disable search input and button
+            searchBox.style.display = 'none';
+            searchButton.disabled = true;
+            searchInput.disabled = true;
+
+            // Enable scroll to top button
+            document.getElementById('scrollToTopButton').style.display = 'block';
+        }
+
+        function goBack() {
+            const resultsDiv = document.getElementById('results');
+            const articleContentDiv = document.getElementById('articleContent');
+            const articleTextDiv = document.getElementById('articleText');
+            const searchBox = document.getElementById('searchBox');
+            const searchButton = document.getElementById('searchButton');
+            const searchInput = document.getElementById('searchInput');
+
+            articleContentDiv.style.display = 'none';
+            articleTextDiv.innerHTML = '';
+            resultsDiv.style.display = 'block';
+            searchBox.style.display = 'block'; // Show the search box
+            searchButton.disabled = false;
+            searchInput.disabled = false;
+
+            // Hide scroll to top button
+            document.getElementById('scrollToTopButton').style.display = 'none';
+        }
+
+        window.onscroll = function () {
+            const scrollToTopButton = document.getElementById('scrollToTopButton');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                scrollToTopButton.style.display = 'block';
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
+        };
+
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+</body>
+</html>
+For this code add some cool animation 
